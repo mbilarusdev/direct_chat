@@ -1,0 +1,99 @@
+syntax = "proto3";
+package chat;
+option go_package = "./chatpb";
+
+service ChatService {
+  rpc CreateChat (CreateChatRequest) returns (CreateChatResponse);
+  rpc DeleteChat (DeleteChatRequest) returns (DeleteChatResponse);
+
+  rpc SendMessage (SendMessageRequest) returns (MessageActionResponse);
+  rpc UpdateMessage (UpdateMessageRequest) returns (MessageActionResponse);
+  rpc DeleteMessage (DeleteMessageRequest) returns (MessageActionResponse);
+  rpc Sync (SyncRequest) returns (SyncResponse);
+  rpc MarkRead (MarkReadRequest) returns (MarkReadResponse);
+}
+
+message CreateChatRequest {
+  string admin_id = 1;
+  string client_id = 2;
+  string title = 3;
+}
+
+message CreateChatResponse {
+  string chat_id = 1;
+}
+
+message DeleteChatRequest {
+  string chat_id = 1;
+}
+
+message DeleteChatResponse {
+  bool success = 1;
+}
+
+message SendMessageRequest {
+  string chat_id = 1;
+  string sender_id = 2;
+  string text = 3;
+}
+
+message UpdateMessageRequest {
+  string chat_id = 1;
+  string message_id = 2;
+  string new_text = 3;
+}
+
+message DeleteMessageRequest {
+  string chat_id = 1;
+  string message_id = 2;
+}
+
+message MessageActionResponse {
+  int64 pts = 1;
+  string receiver_id = 2;
+  string chat_id = 3;
+}
+
+message MarkReadRequest {
+  string chat_id = 1;
+  string user_id = 2;
+  int64 pts = 3;
+}
+
+message MarkReadResponse {
+  bool success = 1;
+}
+
+message SyncRequest {
+  string chat_id = 1;
+  int64 last_pts = 2; 
+  string user_id = 3;
+}
+
+message SyncResponse {
+  int64 current_pts = 1;
+  int64 read_pts = 2;
+  bool full_reload = 3;
+  repeated Message messages = 4;
+  string chat_id = 5;
+}
+message Message {
+  string id = 1;
+  string sender_id = 2;
+  string text = 3;
+  int64 pts = 4;
+  string chat_id = 5;
+}
+
+service NotificationService {
+  rpc SendTelegramType (NotificationRequest) returns (NotificationResponse);
+}
+
+message NotificationRequest {
+  string user_id = 1;
+  string message_text = 2;
+}
+
+message NotificationResponse {
+  bool success = 1;
+}
